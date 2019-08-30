@@ -11,36 +11,47 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
-  List<dynamic> users = [];
-
   @override
   void initState() {
-    getUsers();
+    //createUser();
+    deleteUser();
     super.initState();
   }
 
-  getUsers() async {
-    final QuerySnapshot snapshot = await usersRef.getDocuments();
-    // snapshot.documents.forEach((DocumentSnapshot doc) {
-    //   print(doc.data);
-    // });
-    setState(() {
-      users = snapshot.documents;
+  createUser() {
+    usersRef.document("asdfasfd").setData({
+      "username": "Jeff",
+      "postsCount": 0,
+      "isAdmin": false,
     });
   }
 
-  getUserById() async {
-    final String id = "oVMMNxtbuvB6NcrmlFdD";
-    final DocumentSnapshot doc = await usersRef.document(id).get();
-    print(doc.data);
+  updateUser() async {
+    final DocumentSnapshot doc =
+        await usersRef.document("34ZiYPSHk5uQkQxZBpBw").get();
+    if (doc.exists) {
+      doc.reference.updateData({
+        "username": "John",
+        "postsCount": 0,
+        "isAdmin": false,
+      });
+    }
+  }
+
+  deleteUser() async {
+    final DocumentSnapshot doc =
+        await usersRef.document("34ZiYPSHk5uQkQxZBpBw").get();
+    if (doc.exists) {
+      doc.reference.delete();
+    }
   }
 
   @override
   Widget build(context) {
     return Scaffold(
       appBar: header(context, isAppTitle: true),
-      body: FutureBuilder<QuerySnapshot>(
-        future: usersRef.getDocuments(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: usersRef.snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
