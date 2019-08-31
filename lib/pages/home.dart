@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
+import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
@@ -8,6 +12,8 @@ import 'package:fluttershare/pages/upload.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
+final userRef = Firestore.instance.collection('users');
+final DateTime timestamp = DateTime.now();
 
 class Home extends StatefulWidget {
   @override
@@ -43,9 +49,34 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
+  createUserInFirestore() async {
+    // Check if users exist in users collection in database (based on their id)
+    final GoogleSignInAccount user = googleSignIn.currentUser;
+
+    final DocumentSnapshot doc = await usersRef.document(user.id).get();
+
+    // If user doesn't exist, then take to creat account page
+    if (!doc.exists) {
+      final username = await Navigator.push(
+          context, MaterialPageRoute(builder: (context) => CreateAccount()));
+
+      // TODO: Get username from create account, use it to make new user document in users collection
+      usersRef.document(user.id).setData({
+        "id": user.id,
+        "username": username,
+        "photoUrl": user.photoUrl,
+        "email": user.email,
+        "displayName": user.displayName,
+        "bio": "",
+        "timestamp": timestamp,
+      });
+    }
+  }
+
   handleSignIn(GoogleSignInAccount account) {
     if (account != null) {
       print('User has signed in -- $account');
+      createUserInFirestore();
       setState(() {
         isAuth = true;
       });
@@ -82,7 +113,11 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         children: <Widget>[
-          Timeline(),
+          //Timeline(),
+          RaisedButton(
+            child: Text('Logout'),
+            onPressed: logout,
+          ),
           ActivityFeed(),
           Upload(),
           Search(),
