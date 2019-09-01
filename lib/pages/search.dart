@@ -12,6 +12,8 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  TextEditingController searchController = TextEditingController();
+
   Future<QuerySnapshot> searchResultsFuture;
 
   handleSearch(String query) {
@@ -24,10 +26,15 @@ class _SearchState extends State<Search> {
     });
   }
 
+  clearSearch() {
+    searchController.clear();
+  }
+
   AppBar buildSearchField() {
     return AppBar(
       backgroundColor: Colors.white,
       title: TextFormField(
+        controller: searchController,
         decoration: InputDecoration(
           hintText: "Search for a user",
           filled: true,
@@ -37,7 +44,7 @@ class _SearchState extends State<Search> {
           ),
           suffixIcon: IconButton(
             icon: Icon(Icons.clear),
-            onPressed: () => print("Cleared"),
+            onPressed: () => clearSearch(),
           ),
         ),
         onFieldSubmitted: handleSearch,
@@ -84,7 +91,7 @@ class _SearchState extends State<Search> {
         snapshot.data.documents.forEach((doc) {
           User user = User.fromDocument(doc);
           searchResults.add(
-            Text(user.username),
+            Text(user.displayName),
           );
         });
         return ListView(
