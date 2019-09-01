@@ -1,7 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttershare/models/user.dart' as prefix0;
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/widgets/progress.dart';
@@ -87,11 +87,12 @@ class _SearchState extends State<Search> {
           return circularProgress();
         }
 
-        List<Text> searchResults = [];
+        List<UserResult> searchResults = [];
         snapshot.data.documents.forEach((doc) {
           User user = User.fromDocument(doc);
+          UserResult searchResult = UserResult(user);
           searchResults.add(
-            Text(user.displayName),
+            searchResult,
           );
         });
         return ListView(
@@ -113,8 +114,44 @@ class _SearchState extends State<Search> {
 }
 
 class UserResult extends StatelessWidget {
+  final User user;
+
+  UserResult(this.user);
+
   @override
   Widget build(BuildContext context) {
-    return Text("User Result");
+    return Container(
+      color: Theme.of(context).primaryColor.withOpacity(0.7),
+      child: Column(
+        children: <Widget>[
+          GestureDetector(
+            onTap: () => print("TAPPED"),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.grey,
+                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+              ),
+              title: Text(
+                user.displayName,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                user.username,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Divider(
+            height: 2,
+            color: Colors.white54,
+          ),
+        ],
+      ),
+    );
   }
 }
