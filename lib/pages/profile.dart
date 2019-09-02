@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/widgets/header.dart';
+import 'package:fluttershare/widgets/post.dart';
+import 'package:fluttershare/widgets/progress.dart';
 
 import 'edit_profile.dart';
 
@@ -18,6 +21,34 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final String currentUserId = currentUser?.id;
+  bool isLoading = false;
+  int postCount = 0;
+  List<Post> posts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getProfilePosts();
+  }
+
+  getProfilePosts() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    QuerySnapshot snapshot = await postsRef
+        .document(widget.profileId)
+        .collection('userPosts')
+        .orderBy('timestamp', descending: true)
+        .getDocuments();
+
+    setState(() {
+      postCount = snapshot.documents.length;
+      isLoading = false;
+      posts = snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
+    });
+  }
+
   Column buildCountColumn(String label, int count) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -117,7 +148,7 @@ class _ProfileState extends State<Profile> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            buildCountColumn("posts", 0),
+                            buildCountColumn("posts", postCount),
                             buildCountColumn("followers", 0),
                             buildCountColumn("following", 0),
                           ],
@@ -175,6 +206,13 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  buildProfilePosts() {
+    if (isLoading) {
+      return circularProgress();
+    }
+    return Column(children: posts);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,6 +220,10 @@ class _ProfileState extends State<Profile> {
       body: ListView(
         children: <Widget>[
           buildProfileHeader(),
+          Divider(
+            height: 0.0,
+          ),
+          buildProfilePosts(),
         ],
       ),
     );
