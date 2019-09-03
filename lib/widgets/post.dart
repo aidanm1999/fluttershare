@@ -134,6 +134,7 @@ class _PostState extends State<Post> {
   }
 
   handleDeletePost(BuildContext parentContext) {
+    // TODO - Deleting a post on index.js does not delete comments
     return showDialog(
       context: parentContext,
       builder: (context) {

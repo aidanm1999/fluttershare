@@ -139,6 +139,8 @@ exports.onDeletePost = functions.firestore
         const userId = context.params.userId;
         const postId = context.params.postId;
 
+        
+
         // 1) Get all the followers of the user who made the post
         const userFollowersRef = admin
             .firestore()
