@@ -17,6 +17,7 @@ final userRef = Firestore.instance.collection('users');
 final postsRef = Firestore.instance.collection('posts');
 final commentsRef = Firestore.instance.collection('comments');
 final activityFeedRef = Firestore.instance.collection('feed');
+// TODO - Change this to a function so that whenever timestamp is called a new dateTime is fetched
 final DateTime timestamp = DateTime.now();
 User currentUser;
 
