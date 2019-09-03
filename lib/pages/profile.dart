@@ -120,8 +120,9 @@ class _ProfileState extends State<Profile> {
         text: 'Edit profile',
         function: editProfile,
       );
+    } else {
+      return Text('ProfileButton');
     }
-    return Text('ProfileButton');
   }
 
   buildProfileHeader() {
