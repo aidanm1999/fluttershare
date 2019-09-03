@@ -129,6 +129,7 @@ class _UploadState extends State<Upload> {
   }
 
   Future<String> uploadImage(imageFile) async {
+    // TODO - Should be moved to a posts folder in the bucket
     StorageUploadTask uploadTask =
         storageRef.child('post_$postId.jpg').putFile(imageFile);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
