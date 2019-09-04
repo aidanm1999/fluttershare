@@ -251,7 +251,7 @@ class _ProfileState extends State<Profile> {
       future: usersRef.document(widget.profileId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return CircularProgressIndicator();
+          return circularProgress();
         }
         User user = User.fromDocument(snapshot.data);
         return Padding(

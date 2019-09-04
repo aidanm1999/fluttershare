@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/home.dart';
@@ -36,7 +35,6 @@ class _TimelineState extends State<Timeline> {
         .collection('timelinePosts')
         .orderBy('timestamp', descending: true)
         .getDocuments();
-
     List<Post> posts =
         snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
     setState(() {
@@ -49,7 +47,6 @@ class _TimelineState extends State<Timeline> {
         .document(currentUser.id)
         .collection('userFollowing')
         .getDocuments();
-
     setState(() {
       followingList = snapshot.documents.map((doc) => doc.documentID).toList();
     });
@@ -57,13 +54,11 @@ class _TimelineState extends State<Timeline> {
 
   buildTimeline() {
     if (posts == null) {
-      return CircularProgressIndicator();
+      return circularProgress();
     } else if (posts.isEmpty) {
       return buildUsersToFollow();
     } else {
-      return ListView(
-        children: posts,
-      );
+      return ListView(children: posts);
     }
   }
 
@@ -73,7 +68,7 @@ class _TimelineState extends State<Timeline> {
           usersRef.orderBy('timestamp', descending: true).limit(30).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return CircularProgressIndicator();
+          return circularProgress();
         }
         List<UserResult> userResults = [];
         snapshot.data.documents.forEach((doc) {

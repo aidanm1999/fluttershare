@@ -93,10 +93,10 @@ class _HomeState extends State<Home> {
     print(currentUser.username);
   }
 
-  handleSignIn(GoogleSignInAccount account) {
+  handleSignIn(GoogleSignInAccount account) async {
     if (account != null) {
       print('User has signed in -- $account');
-      createUserInFirestore();
+      await createUserInFirestore();
       setState(() {
         isAuth = true;
       });

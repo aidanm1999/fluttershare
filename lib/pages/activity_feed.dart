@@ -5,6 +5,7 @@ import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/pages/post_screen.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/header.dart';
+import 'package:fluttershare/widgets/progress.dart';
 import 'package:timeago/timeago.dart';
 
 class ActivityFeed extends StatefulWidget {
@@ -41,7 +42,7 @@ class _ActivityFeedState extends State<ActivityFeed> {
           future: getActivityFeed(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return CircularProgressIndicator();
+              return circularProgress();
             }
             return ListView(
               children: snapshot.data,
