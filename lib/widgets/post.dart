@@ -246,37 +246,39 @@ class _PostState extends State<Post> {
   addLikeToActivityFeed() {
     //Don't notify if user has liked their own post
     bool isNotPostOwner = currentUserId != ownerId;
-    if (isNotPostOwner) {
-      activityFeedRef
-          .document(ownerId)
-          .collection('feedItems')
-          .document(postId)
-          .setData({
-        'type': 'like',
-        'username': currentUser.username,
-        'userId': currentUser.id,
-        'userProfileImg': currentUser.photoUrl,
-        'postId': postId,
-        'mediaUrl': mediaUrl,
-        'timestamp': timestamp,
-      });
-    }
+    // TODO - Uncomment this
+    //if (isNotPostOwner) {
+    activityFeedRef
+        .document(ownerId)
+        .collection('feedItems')
+        .document(postId)
+        .setData({
+      'type': 'like',
+      'username': currentUser.username,
+      'userId': currentUser.id,
+      'userProfileImg': currentUser.photoUrl,
+      'postId': postId,
+      'mediaUrl': mediaUrl,
+      'timestamp': timestamp,
+    });
+    //}
   }
 
   removeLikeFromActivityFeed() {
     bool isNotPostOwner = currentUserId != ownerId;
-    if (isNotPostOwner) {
-      activityFeedRef
-          .document(ownerId)
-          .collection('feedItems')
-          .document(postId)
-          .get()
-          .then((doc) {
-        if (doc.exists) {
-          doc.reference.delete();
-        }
-      });
-    }
+    // TODO - Uncomment this
+    //if (isNotPostOwner) {
+    activityFeedRef
+        .document(ownerId)
+        .collection('feedItems')
+        .document(postId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    //}
   }
 
   buildPostImage() {

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +36,8 @@ class _HomeState extends State<Home> {
   bool isAuth = false;
   PageController pageController;
   int pageIndex = 0;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
@@ -100,11 +105,62 @@ class _HomeState extends State<Home> {
       setState(() {
         isAuth = true;
       });
+      configurePushNotifications();
     } else {
       setState(() {
         isAuth = false;
       });
     }
+  }
+
+  configurePushNotifications() {
+    final GoogleSignInAccount user = googleSignIn.currentUser;
+    if (Platform.isIOS) getiOSPermission();
+
+    _firebaseMessaging.getToken().then((token) {
+      print("Firebase Messaging Token $token\n");
+      usersRef
+          .document(user.id)
+          .updateData({'androidNotificationToken': token});
+    });
+
+    _firebaseMessaging.configure(
+      //WHen app isnt opened
+      onLaunch: (Map<String, dynamic> message) async {
+        print('onLaunch - $message\n');
+      },
+      //Using app but on background
+      onResume: (Map<String, dynamic> message) async {
+        print('onResume - $message\n');
+      },
+      //When message is active
+      onMessage: (Map<String, dynamic> message) async {
+        print('onMessage - $message\n');
+        final String recipientId = message['data']['recipient'];
+        final String body = message['notification']['body'];
+        if (recipientId == user.id) {
+          print('Notification shown');
+          SnackBar snackbar = SnackBar(
+            content: Text(
+              body,
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+          _scaffoldKey.currentState.showSnackBar(snackbar);
+        } else {
+          print("Notification not shown");
+        }
+      },
+    );
+  }
+
+  getiOSPermission() {
+    _firebaseMessaging.requestNotificationPermissions(
+      IosNotificationSettings(alert: true, badge: true, sound: true),
+    );
+    _firebaseMessaging.onIosSettingsRegistered.listen((settings) {
+      print("Settings registered $settings");
+    });
   }
 
   login() {
@@ -177,6 +233,7 @@ class _HomeState extends State<Home> {
 
   Scaffold bulidUnAuthScreen() {
     return Scaffold(
+      key: _scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
