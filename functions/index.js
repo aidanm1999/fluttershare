@@ -139,7 +139,7 @@ exports.onDeletePost = functions.firestore
         const userId = context.params.userId;
         const postId = context.params.postId;
 
-        
+
 
         // 1) Get all the followers of the user who made the post
         const userFollowersRef = admin
@@ -170,4 +170,61 @@ exports.onDeletePost = functions.firestore
                     res.error(500);
                 });
         });
+    });
+
+
+exports.onCreateActivityFeedItem = functions.firestore
+    .document('/feed/{userId}/feedItems/{activityFeedItem}')
+    .onCreate(async (snapshot, context) => {
+        console.log('Activity Feed Item Created ', snapshot.data());
+
+        //Get User connected to feed
+        const userId = context.params.userId;
+        const userRef = admin.firestore().doc(`users/${userId}`);
+        const doc = await userRef.get();
+
+        //Check if have a notification document
+        const androidNotificationToken = doc.data().androidNotificationToken;
+        if (androidNotificationToken) {
+            sendNotification(androidNotificationToken, snapshot.data());
+        } else {
+            console.log('No android notification token');
+        }
+
+        function sendNotification(androidNotificationToken, activityFeedItem) {
+            let body;
+
+            //switch body val based off of notification type
+            switch (key) {
+                case "comment":
+                    body = `${activityFeedItem.username} replied ${activityFeedItem.commentData}`;
+                    break;
+                case "like":
+                    body = `${activityFeedItem.username} liked your post`;
+                    break;
+                case "follow":
+                    body = `${activityFeedItem.username} started following you`;
+                    break;
+
+                default:
+                    break;
+            }
+
+            //Create messahe for notification
+            const message = {
+                notification: { body },
+                token: androidNotificationToken,
+                data: { recipient: userid },
+            };
+
+            //Send message with admin messaging
+            //'response' is a message id string
+            admin.messaging.send(message).then(response => {
+                console.log("Successfully sent message", response);
+                return null;
+            }).catch(error => {
+                console.log("Error Sending message", error);
+            });
+        }
+
     });
