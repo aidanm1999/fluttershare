@@ -69,19 +69,18 @@ class CommentsState extends State<Comments> {
       'userId': currentUser.id,
     });
     bool isNotPostOwner = postOwnerId != currentUser.id;
-    // TODO - Uncomment this
-    //if (isNotPostOwner) {
-    activityFeedRef.document(postOwnerId).collection('feedItems').add({
-      'type': 'comment',
-      'commentData': commentController.text.trim(),
-      'username': currentUser.username,
-      'userId': currentUser.id,
-      'userProfileImg': currentUser.photoUrl,
-      'postId': postId,
-      'mediaUrl': postMediaUrl,
-      'timestamp': timestamp,
-    });
-    //}
+    if (isNotPostOwner) {
+      activityFeedRef.document(postOwnerId).collection('feedItems').add({
+        'type': 'comment',
+        'commentData': commentController.text.trim(),
+        'username': currentUser.username,
+        'userId': currentUser.id,
+        'userProfileImg': currentUser.photoUrl,
+        'postId': postId,
+        'mediaUrl': postMediaUrl,
+        'timestamp': timestamp,
+      });
+    }
 
     commentController.clear();
   }
