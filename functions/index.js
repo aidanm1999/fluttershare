@@ -195,20 +195,15 @@ exports.onCreateActivityFeedItem = functions.firestore
             let body;
 
             //switch body val based off of notification type
-            switch (activityFeedItem.type) {
+            switch (key) {
                 case "comment":
                     body = `${activityFeedItem.username} replied ${activityFeedItem.commentData}`;
-                    console.log('comment HIT by -', activityFeedItem.username);
                     break;
                 case "like":
                     body = `${activityFeedItem.username} liked your post`;
-
-                    console.log('like HIT by -', activityFeedItem.username);
                     break;
                 case "follow":
                     body = `${activityFeedItem.username} started following you`;
-
-                    console.log('follow HIT by -', activityFeedItem.username);
                     break;
 
                 default:
@@ -219,19 +214,14 @@ exports.onCreateActivityFeedItem = functions.firestore
             const message = {
                 notification: { body },
                 token: androidNotificationToken,
-                data: { recipient: doc.data().id },
+                data: { recipient: userid },
             };
-
-            console.log("Message - ", message);
 
             //Send message with admin messaging
             //'response' is a message id string
-
-            console.log(admin.messaging);
-
-            admin.messaging().send(message).then(response => {
+            admin.messaging.send(message).then(response => {
                 console.log("Successfully sent message", response);
-                return '';
+                return null;
             }).catch(error => {
                 console.log("Error Sending message", error);
             });
