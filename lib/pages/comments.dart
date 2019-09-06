@@ -69,7 +69,7 @@ class CommentsState extends State<Comments> {
       'userId': currentUser.id,
     });
     bool isNotPostOwner = postOwnerId != currentUser.id;
-    if (isNotPostOwner) {
+    //if (isNotPostOwner) {
       activityFeedRef.document(postOwnerId).collection('feedItems').add({
         'type': 'comment',
         'commentData': commentController.text.trim(),
@@ -80,7 +80,7 @@ class CommentsState extends State<Comments> {
         'mediaUrl': postMediaUrl,
         'timestamp': timestamp,
       });
-    }
+    //}
 
     commentController.clear();
   }

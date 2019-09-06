@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -246,7 +245,7 @@ class _PostState extends State<Post> {
   addLikeToActivityFeed() {
     //Don't notify if user has liked their own post
     bool isNotPostOwner = currentUserId != ownerId;
-    if (isNotPostOwner) {
+    //if (isNotPostOwner) {
       activityFeedRef
           .document(ownerId)
           .collection('feedItems')
@@ -260,7 +259,7 @@ class _PostState extends State<Post> {
         'mediaUrl': mediaUrl,
         'timestamp': timestamp,
       });
-    }
+    //}
   }
 
   removeLikeFromActivityFeed() {

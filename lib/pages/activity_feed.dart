@@ -26,7 +26,6 @@ class _ActivityFeedState extends State<ActivityFeed> {
 
     snapshot.documents.forEach((doc) {
       feedItems.add(ActivityFeedItem.fromDocument(doc));
-      print('Activity feed item : ${doc.data}');
     });
 
     return feedItems;
